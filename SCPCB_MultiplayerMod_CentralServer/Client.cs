@@ -88,7 +88,6 @@ namespace SCPCB_MultiplayerMod_CentralServer
             switch (type)
             {
                 case 52: // request playerauth
-                    Log.WriteLog("[" + Type.ToUpper() + ":" + Connection +"] requests auth");
                     int randomId = ReadInt(b);
                     int cryptedKey = ReadInt(b);
 

@@ -202,11 +202,8 @@ namespace SCPCB_MultiplayerMod_CentralServer
                 {
                     c = new Client(ip, "tcp");
                     Clients.Add(c);
+                    Log.WriteLog("First connection from " + ip);
                 }
-
-                if (c.tcp == null)
-                    Log.WriteLog("Connection from " + ip + " on TCP");
-                
                 c.Type = "tcp";
                 c.tcp = client;
 
