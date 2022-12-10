@@ -116,14 +116,28 @@ namespace SCPCB_MultiplayerMod_CentralServer
                         
                         Steam.lastResult[id] = new Result();
 
-                        bool worked = SteamServer.BeginAuthSession(data.ToArray(), id);
-
-                        if (!worked)
+                        if (!Program.useUser)
                         {
-                            Log.WriteLog("[" + Type.ToUpper() + ":" + Connection +
-                                         "] failed to start auth session for steam id " + id + " ^ " + steamId32 +
-                                         " with encoded ticket length " + data.ToArray().Length);
-                            return;
+                            bool worked = SteamServer.BeginAuthSession(data.ToArray(), id);
+
+                            if (!worked)
+                            {
+                                Log.WriteLog("[" + Type.ToUpper() + ":" + Connection +
+                                             "] failed to start auth session for steam id " + id + " ^ " + steamId32 +
+                                             " with encoded ticket length " + data.ToArray().Length);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            BeginAuthResult res = SteamUser.BeginAuthSession(data.ToArray(), id);
+                            if (res != BeginAuthResult.OK)
+                            {
+                                Log.WriteLog("[" + Type.ToUpper() + ":" + Connection +
+                                             "] failed to start auth session for steam id " + id + " ^ " + steamId32 +
+                                             " with result " + res);
+                                return;
+                            }
                         }
 
                         new Thread(() => {

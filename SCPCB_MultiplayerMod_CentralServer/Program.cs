@@ -15,6 +15,8 @@ namespace SCPCB_MultiplayerMod_CentralServer
         public static Settings settings;
         public static bool Real = true;
 
+        public static bool useUser = false;
+
         public static int MaxConnections = 20;
         
         public static void Main(string[] args)
@@ -30,6 +32,8 @@ namespace SCPCB_MultiplayerMod_CentralServer
                 Log.WriteLog("[SERVER] Started Server with logs enabled!");
             
             Log.WriteLog("[STEAM] Connecting to steam...");
+
+            useUser = settings.Values["useuser"] == 1;
             
             var init = new SteamServerInit("SCP:CB Multiplayer Mod Central Server", "SCP:CB Multiplayer Mod Central Server")
             {
@@ -40,20 +44,42 @@ namespace SCPCB_MultiplayerMod_CentralServer
                 Secure = true
             };
 
-            try
+            if (!useUser)
             {
-                SteamServer.Init(1782380, init);
-            }
-            catch (Exception e)
-            {
-                Log.WriteLog("Failed to create steam server, is steam running?");
-                Console.Read();
-                return;
-            }
 
-            SteamServer.LogOnAnonymous();
-            
-            SteamServer.OnValidateAuthTicketResponse += Steam.SteamServerOnOnValidateAuthTicketResponse;
+
+                try
+                {
+                    SteamServer.Init(1782380, init);
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLog("Failed to create steam server, is steam running?");
+                    Console.Read();
+                    return;
+                }
+
+
+                SteamServer.LogOnAnonymous();
+
+                SteamServer.OnValidateAuthTicketResponse += Steam.SteamServerOnOnValidateAuthTicketResponse;
+            }
+            else
+            {
+                Log.WriteLog("Running steam in user mode!! You need a steam user to do this.");
+                try
+                {
+                    SteamClient.Init(1782380);
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLog("Failed to create steam user server, is steam running?");
+                    Console.Read();
+                    return;
+                }
+                Log.WriteLog("Logged into " + SteamClient.Name + " as a user.");
+                SteamUser.OnValidateAuthTicketResponse += Steam.SteamServerOnOnValidateAuthTicketResponse;
+            }
 
             Steam.lastResult = new Dictionary<SteamId, Result>();
             
