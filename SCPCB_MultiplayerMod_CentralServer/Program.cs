@@ -136,6 +136,7 @@ namespace SCPCB_MultiplayerMod_CentralServer
                 if (c == null)
                 {
                     c = new Client(ip, "udp");
+                    Log.WriteLog("First connection from " + ip);
                     Clients.Add(c);
                 }
 
@@ -150,9 +151,6 @@ namespace SCPCB_MultiplayerMod_CentralServer
                 
                 c.lastConnection = DateTime.Now;
 
-                if (c.udp == null)
-                    Log.WriteLog("Connection from " + ip + " on UDP");
-                
                 c.udp = listener;
                 
                 c.Type = "udp";
